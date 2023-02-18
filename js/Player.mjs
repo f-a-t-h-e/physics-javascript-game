@@ -1,4 +1,5 @@
 import Game from "./Game.mjs";
+import { checkCollision } from "./utils.mjs";
 
 export default class Player {
   /**@type {Game} */
@@ -28,7 +29,7 @@ export default class Player {
     this.x = this.game.width * 0.5;
     this.y = this.game.height * 0.5;
     this.r = 50;
-    this.s.modifier = 20;
+    this.s.modifier = 5;
   }
 
   /**@type {(ctx: CanvasRenderingContext2D)=>void} */
@@ -58,8 +59,22 @@ export default class Player {
       this.s.x = 0;
       this.s.y = 0;
     }
+    let col = false;
 
     this.x += this.s.x * this.s.modifier;
     this.y += this.s.y * this.s.modifier;
+
+    this.game.obstacles.arr.forEach((obstacle) => {
+      const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
+        this,
+        obstacle
+      );
+      if (colission) {
+        const unit_X = dx / distance;
+        const unit_Y = dy / distance;
+        this.x = obstacle.x + (sumOfRadius + 1) * unit_X;
+        this.y = obstacle.y + (sumOfRadius + 1) * unit_Y;
+      }
+    });
   }
 }

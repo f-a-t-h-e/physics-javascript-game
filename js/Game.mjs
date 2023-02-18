@@ -26,7 +26,7 @@ export default class Game {
     };
 
     /**@type {{num:number;arr:Obstacle[]}} */
-    this.obstacles = { num: 10, arr: [] };
+    this.obstacles = { num: 20, arr: [] };
 
     this.init();
   }
