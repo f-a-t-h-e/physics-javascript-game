@@ -1,5 +1,7 @@
 import Game from "./Game.mjs";
 
+let lastTime = 0;
+
 window.addEventListener("load", function () {
   /**@type {HTMLCanvasElement} */
   const canvas = document.getElementById("canvas1");
@@ -13,12 +15,11 @@ window.addEventListener("load", function () {
   /**@type {Game} */
   const game = new Game({ canvas });
 
-  animate();
-
+  animate(lastTime);
   function animate(timestamp) {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    game.render(context);
-
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
+    game.render(context, deltaTime);
     window.requestAnimationFrame(animate);
   }
 });

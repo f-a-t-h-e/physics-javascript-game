@@ -33,9 +33,10 @@ body {
   -moz-transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   -o-transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
-img {
+img:not(#overlay) {
   display: none;
   /* This is to listen to the canvas only*/
   pointer-events: none;

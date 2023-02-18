@@ -1,5 +1,7 @@
+import Egg from "./Egg.mjs";
 import Obstacle from "./Obstacle.mjs";
 import Player from "./Player.mjs";
+import Thing from "./Thing.mjs";
 
 export default class Game {
   /**@type {HTMLCanvasElement} */
@@ -12,51 +14,52 @@ export default class Game {
   player;
   /**@type {{ x: number; y: number; pressed: boolean;}} */
   mouse;
+  //
+  fps = 50;
+  timer = 0;
+  interval = 16.5;
+
+  skip = false;
 
   /**@type {(canvas:HTMLCanvasElement)=>Game} */
   constructor({ canvas }) {
     this.canvas = canvas;
     this.width = this.canvas.width;
     this.height = this.canvas.height;
+    this.marginY = 260;
     this.player = new Player(this);
     this.mouse = {
       x: this.width * 0.5,
       y: this.height * 0.5,
       pressed: false,
     };
-
-    /**@type {{num:number;arr:Obstacle[]}} */
-    this.obstacles = { num: 20, arr: [] };
+    this.thing = new Thing(this);
+    this.debug = true;
+    this.maxObstacles = 10;
+    this.eggs = { max: 10, last: 0, count: 0 };
+    this.things = [this.player];
 
     this.init();
   }
+  updateThings() {
+    this.things = [...this.obstacles.arr, this.player, ...this.eggs.arr];
+  }
   init() {
-    /**
-     * TO_DO : pass the values instead of this brute force
-     */
-    let attempts = 0;
-    while (this.obstacles.arr.length < this.obstacles.num && attempts < 500) {
-      /**@type {Obstacle} */
-      const testObstacle = new Obstacle(this);
-      let overlap = false;
-      this.obstacles.arr.forEach((obstacle) => {
-        const dx = testObstacle.x - obstacle.x;
-        const dy = testObstacle.y - obstacle.y;
-        const distance = Math.hypot(dx, dy);
-        const distanceBuffer = 100;
-        const sumOfRadius = testObstacle.r + obstacle.r + distanceBuffer;
-        if (distance < sumOfRadius) {
-          overlap = true;
-        }
-        console.log(1);
-      });
-
-      if (!overlap) {
-        this.obstacles.arr.push(testObstacle);
-      }
-      ++attempts;
+    for (let i = 0; i < this.maxObstacles; i++) {
+      this.thing.addThing(Obstacle, this);
     }
 
+    window.addEventListener("keypress", (e) => {
+      // console.log(e);
+      // lesson - 15
+      if (e.code === "KeyD") {
+        this.debug = !this.debug;
+      } else if (e.code === "KeyU") {
+        this.skip = !this.skip;
+      } else if (e.code === "KeyG") {
+        console.log(this);
+      }
+    });
     this.canvas.addEventListener("mousedown", (e) => {
       this.mouse.x = e.offsetX;
       this.mouse.y = e.offsetY;
@@ -75,12 +78,27 @@ export default class Game {
     });
   }
 
-  /**@type {(ctx: CanvasRenderingContext2D)} */
-  render(ctx) {
-    this.player.draw(ctx);
-    this.player.update();
-    this.obstacles.arr.forEach((obstacle) => {
-      obstacle.draw(ctx);
-    });
+  /**@type {(ctx: CanvasRenderingContext2D, deltaTime:number)} */
+  render(ctx, deltaTime) {
+    if (this.timer > this.interval) {
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      this.things
+        .sort((a, b) => a.y - b.y)
+        .forEach((thing) => {
+          thing.update();
+          thing.draw(ctx);
+        });
+      if (this.eggs.count < this.eggs.max) {
+        this.eggs.last += 1;
+        if (this.eggs.last > 10) {
+          this.thing.addThing(Egg, this);
+          this.eggs.last = 0;
+          this.eggs.count += 1;
+        }
+      }
+      this.timer = 0;
+    }
+    this.timer += deltaTime;
   }
 }

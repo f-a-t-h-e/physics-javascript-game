@@ -1,7 +1,5 @@
 import Game from "./Game.mjs";
-
-/**@type {(min=0,max=1)=>number} */
-const rand = (min = 0, max = 1) => Math.random() * (max - min) + min;
+import { rand } from "./utils.mjs";
 
 export default class Obstacle {
   /**@type {Game} */
@@ -28,35 +26,61 @@ export default class Obstacle {
 
     this.width = this.sprite.w;
     this.height = this.sprite.h;
-    this.r = 60;
-
+    this.r = 40;
+    this.marginY = this.game.marginY;
     this.x = rand(this.width, this.game.width - this.width);
-    this.y = rand(260, this.game.height);
-    this.framX = Math.floor(rand(undefined, 4));
-    this.framY = Math.floor(rand(undefined, 3));
+    this.y = rand(this.marginY + this.r, this.game.height - this.r);
+    this.framX = Math.floor(rand(0, 4)) * this.sprite.w;
+    this.framY = Math.floor(rand(0, 3)) * this.sprite.h;
+    console.log(this.framX / this.sprite.w);
+    console.log(this.framY / this.sprite.h);
     this.sprite.x = this.x - this.width * 0.5;
     this.sprite.y = this.y - this.height * 0.5 - 70;
   }
 
+  init() {
+    this.sprite.x = this.x - this.width * 0.5;
+    this.sprite.y = this.y - this.height * 0.5 - 70;
+  }
+
+  update() {}
+
   /**@type {(ctx: CanvasRenderingContext2D)=>void} */
   draw(ctx) {
-    ctx.drawImage(
-      this.image,
-      this.framX * this.sprite.w,
-      this.framY * this.sprite.h,
-      this.sprite.w,
-      this.sprite.h,
-      this.sprite.x,
-      this.sprite.y,
-      this.width,
-      this.height
-    );
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-    ctx.fill();
-    ctx.restore();
-    ctx.stroke();
+    if (this.game.skip) {
+    } else {
+      ctx.drawImage(
+        this.image,
+        this.framX,
+        this.framY,
+        this.sprite.w,
+        this.sprite.h,
+        this.sprite.x,
+        this.sprite.y,
+        this.width,
+        this.height
+      );
+    }
+    if (this.game.debug) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.save();
+      ctx.globalAlpha = 0.5;
+      ctx.fill();
+      ctx.restore();
+      ctx.stroke();
+    }
+  }
+
+  hitMargins() {
+    if (this.y < this.marginY + this.r) {
+      this.y = this.marginY + this.r + 1;
+      return true;
+    }
+    if (this.y > this.game.height - this.r) {
+      this.y = this.game.height - this.r - 1;
+      return true;
+    }
+    return false;
   }
 }

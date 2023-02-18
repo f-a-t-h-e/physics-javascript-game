@@ -1,3 +1,4 @@
+import Egg from "./Egg.mjs";
 import Game from "./Game.mjs";
 import { checkCollision } from "./utils.mjs";
 
@@ -26,10 +27,6 @@ export default class Player {
    * @type {{w:number;h:number;x:number;y:number}}
    */
   sprite;
-  /**
-   * @type {{x:number;y:number;step:number;num:number}}
-   */
-  frame;
 
   /**@type {(game:Game)=>Player} */
   constructor(game) {
@@ -37,7 +34,7 @@ export default class Player {
 
     this.x = this.game.width * 0.5;
     this.y = this.game.height * 0.5;
-    this.r = 50;
+    this.r = 30;
     this.sprite = {
       h: 255,
       w: 255,
@@ -51,37 +48,46 @@ export default class Player {
     this.image = document.getElementById("bull");
     this.width = this.sprite.w;
     this.height = this.sprite.h;
+    this.marginY = this.game.marginY - this.r * 2 - 5;
 
-    this.frame = {
-      step: 1,
-      num: 0,
-    };
+    addEventListener("keydown", (e) => {
+      if (e.code === "KeyY") {
+        // console.log(this.marginY);
+      }
+    });
   }
+
+  init() {}
 
   /**@type {(ctx: CanvasRenderingContext2D)=>void} */
   draw(ctx) {
-    ctx.drawImage(
-      this.image,
-      this.sprite.x * this.sprite.w,
-      this.sprite.y * this.sprite.h,
-      this.sprite.w,
-      this.sprite.h,
-      this.x - this.width * 0.5,
-      this.y - this.height * 0.5 - 100,
-      this.width,
-      this.height
-    );
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-    ctx.fill();
-    ctx.restore();
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(this.x, this.y);
-    ctx.lineTo(this.game.mouse.x, this.game.mouse.y);
-    ctx.stroke();
+    if (this.game.skip) {
+    } else {
+      ctx.drawImage(
+        this.image,
+        this.sprite.x * this.sprite.w,
+        this.sprite.y * this.sprite.h,
+        this.sprite.w,
+        this.sprite.h,
+        this.x - this.width * 0.5,
+        this.y - this.height * 0.5 - 100,
+        this.width,
+        this.height
+      );
+    }
+    if (this.game.debug) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.save();
+      ctx.globalAlpha = 0.5;
+      ctx.fill();
+      ctx.restore();
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(this.game.mouse.x, this.game.mouse.y);
+      ctx.stroke();
+    }
   }
 
   update() {
@@ -111,22 +117,44 @@ export default class Player {
       this.s.x = 0;
       this.s.y = 0;
     }
-    let col = false;
 
     this.x += this.s.x * this.s.modifier;
     this.y += this.s.y * this.s.modifier;
-
-    this.game.obstacles.arr.forEach((obstacle) => {
-      const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
-        this,
-        obstacle
-      );
-      if (colission) {
-        const unit_X = dx / distance;
-        const unit_Y = dy / distance;
-        this.x = obstacle.x + (sumOfRadius + 1) * unit_X;
-        this.y = obstacle.y + (sumOfRadius + 1) * unit_Y;
+    // boundary x
+    if (this.x < this.r) this.x = this.r + 1;
+    else if (this.x > this.game.width - this.r)
+      this.x = this.game.width - this.r - 1;
+    // boundary y
+    if (this.y < this.marginY + this.r) this.y = this.marginY + this.r + 1;
+    else if (this.y > this.game.height - this.r)
+      this.y = this.game.height - this.r - 1;
+    // collision
+    this.game.things.forEach((thing) => {
+      if (thing instanceof Player || thing instanceof Egg) {
+      } else {
+        const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
+          this,
+          thing
+        );
+        if (colission) {
+          const unit_X = dx / distance;
+          const unit_Y = dy / distance;
+          this.x = thing.x + (sumOfRadius + 1) * unit_X;
+          this.y = thing.y + (sumOfRadius + 1) * unit_Y;
+        }
       }
     });
+  }
+
+  hitMargins() {
+    if (this.y < this.marginY + this.r) {
+      this.y = this.marginY + this.r + 1;
+      return true;
+    }
+    if (this.y > this.game.height - this.r) {
+      this.y = this.game.height - this.r - 1;
+      return true;
+    }
+    return false;
   }
 }
