@@ -9,8 +9,11 @@ export default class Egg {
   constructor(game) {
     this.game = game;
     this.r = 45;
+    this.marginYB = this.game.height - this.r - 30;
+    this.marginYT = this.game.marginY + this.r;
+    this.marginXR = this.game.width - this.r;
     this.x = rand(this.r, this.game.width - this.r);
-    this.y = rand(this.game.marginY, this.game.height);
+    this.y = rand(this.marginYT, this.marginYB);
 
     this.sprite = {
       w: 110,
@@ -28,6 +31,58 @@ export default class Egg {
   }
 
   update() {}
+  updatePos(index, depth, dig = false) {
+    let moved = false;
+    if (depth > 3) {
+      moved = true;
+    } else {
+      this.game.things.forEach((thing, i) => {
+        if (!(i === index)) {
+          if (false && thing instanceof Egg) {
+            const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
+              thing,
+              this
+            );
+            if (colission) {
+              // const unit_X = dx / distance;
+              // const unit_Y = dy / distance;
+              // thing.x = this.x + (sumOfRadius + 1) * unit_X;
+              // thing.y = this.y + (sumOfRadius + 1) * unit_Y;
+              if (!(dig && thing.updatePos(i, depth + 1, false))) {
+                const [colission, distance, sumOfRadius, dx, dy] =
+                  checkCollision(this, thing);
+                if (colission) {
+                  const unit_X = dx / distance;
+                  const unit_Y = dy / distance;
+                  this.x = thing.x + (sumOfRadius + 1) * unit_X;
+                  this.y = thing.y + (sumOfRadius + 1) * unit_Y;
+                }
+              }
+              // if (thing.updatePos(i, depth + 1)) {
+              moved = true;
+              // }
+            }
+          } else {
+            const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
+              this,
+              thing
+            );
+            if (colission) {
+              const unit_X = dx / distance;
+              const unit_Y = dy / distance;
+              this.x = thing.x + (sumOfRadius + 1) * unit_X;
+              this.y = thing.y + (sumOfRadius + 1) * unit_Y;
+              moved = true;
+            }
+          }
+        }
+      });
+    }
+    this.hitMargins() && (moved = true);
+    this.init();
+
+    return moved;
+  }
 
   /**@type {(ctx: CanvasRenderingContext2D)=>void} */
   draw(ctx) {
@@ -57,14 +112,21 @@ export default class Egg {
   }
 
   hitMargins() {
-    if (this.y < this.game.marginY + this.r) {
-      this.y = this.game.marginY + this.r + 1;
-      return true;
+    let moved = false;
+    if (this.y < this.marginYT) {
+      this.y = this.marginYT + 1;
+      moved = true;
+    } else if (this.y > this.marginYB) {
+      this.y = this.marginYB - 1;
+      moved = true;
     }
-    if (this.y > this.game.height - this.r) {
-      this.y = this.game.height - this.r - 1;
-      return true;
+    if (this.x < this.r) {
+      this.x = this.r + 1;
+      moved = true;
+    } else if (this.x > this.marginXR) {
+      this.x = this.marginXR - 1;
+      moved = true;
     }
-    return false;
+    return moved;
   }
 }

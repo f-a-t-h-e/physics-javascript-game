@@ -35,8 +35,8 @@ export default class Game {
     };
     this.thing = new Thing(this);
     this.debug = true;
-    this.maxObstacles = 10;
-    this.eggs = { max: 10, last: 0, count: 0 };
+    this.maxObstacles = 5;
+    this.eggs = { max: 10, last: 0, count: 0, delay: 1 * 1000 };
     this.things = [this.player];
 
     this.init();
@@ -90,8 +90,8 @@ export default class Game {
           thing.draw(ctx);
         });
       if (this.eggs.count < this.eggs.max) {
-        this.eggs.last += 1;
-        if (this.eggs.last > 10) {
+        this.eggs.last += deltaTime;
+        if (this.eggs.last >= this.eggs.delay) {
           this.thing.addThing(Egg, this);
           this.eggs.last = 0;
           this.eggs.count += 1;

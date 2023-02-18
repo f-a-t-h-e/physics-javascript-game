@@ -34,7 +34,7 @@ export default class Player {
 
     this.x = this.game.width * 0.5;
     this.y = this.game.height * 0.5;
-    this.r = 30;
+    this.r = 40;
     this.sprite = {
       h: 255,
       w: 255,
@@ -129,8 +129,27 @@ export default class Player {
     else if (this.y > this.game.height - this.r)
       this.y = this.game.height - this.r - 1;
     // collision
-    this.game.things.forEach((thing) => {
-      if (thing instanceof Player || thing instanceof Egg) {
+    this.game.things.forEach((thing, i) => {
+      if (thing instanceof Player) {
+      } else if (thing instanceof Egg) {
+        const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
+          this,
+          thing
+        );
+        if (colission) {
+          if (thing.updatePos(i, 0)) {
+            const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
+              this,
+              thing
+            );
+            if (colission) {
+              const unit_X = dx / distance;
+              const unit_Y = dy / distance;
+              this.x = thing.x + (sumOfRadius + 2) * unit_X;
+              this.y = thing.y + (sumOfRadius + 2) * unit_Y;
+            }
+          }
+        }
       } else {
         const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
           this,
