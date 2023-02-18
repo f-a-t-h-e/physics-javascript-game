@@ -22,19 +22,19 @@ export default class Player {
    */
   d = { x: 0, y: 0 };
 
-  /**@type {(inputs:{game:Game})} */
-  constructor({ game: theGame }) {
-    this.game = theGame;
+  /**@type {(game:Game)=>Player} */
+  constructor(game) {
+    this.game = game;
     this.x = this.game.width * 0.5;
     this.y = this.game.height * 0.5;
-    this.r = 30;
+    this.r = 50;
     this.s.modifier = 20;
   }
 
-  /**@type {(ctx: CanvasRenderingContext2D)} */
+  /**@type {(ctx: CanvasRenderingContext2D)=>void} */
   draw(ctx) {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, 50, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
     ctx.save();
     ctx.globalAlpha = 0.5;
     ctx.fill();

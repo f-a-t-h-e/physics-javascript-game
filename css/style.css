@@ -36,6 +36,7 @@ body {
 }
 
 img {
+  display: none;
   /* This is to listen to the canvas only*/
   pointer-events: none;
 }
