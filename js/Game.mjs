@@ -1,4 +1,5 @@
 import Egg from "./Egg.mjs";
+import Enemy from "./Enemy.mjs";
 import Obstacle from "./Obstacle.mjs";
 import Player from "./Player.mjs";
 import Thing from "./Thing.mjs";
@@ -76,6 +77,7 @@ export default class Game {
         this.mouse.y = e.offsetY;
       }
     });
+    this.thing.addThing(Enemy, this);
   }
 
   /**@type {(ctx: CanvasRenderingContext2D, deltaTime:number)} */

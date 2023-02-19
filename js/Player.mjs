@@ -34,7 +34,7 @@ export default class Player {
 
     this.x = this.game.width * 0.5;
     this.y = this.game.height * 0.5;
-    this.r = 40;
+    this.r = 30;
     this.sprite = {
       h: 255,
       w: 255,
