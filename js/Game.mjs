@@ -1,8 +1,10 @@
 import Egg from "./Egg.mjs";
 import Enemy from "./Enemy.mjs";
+import Larva from "./Larva.mjs";
 import Obstacle from "./Obstacle.mjs";
 import Player from "./Player.mjs";
 import Thing from "./Thing.mjs";
+import { rand } from "./utils.mjs";
 
 export default class Game {
   /**@type {HTMLCanvasElement} */
@@ -26,6 +28,7 @@ export default class Game {
   /**@type {(canvas:HTMLCanvasElement)=>Game} */
   constructor({ canvas }) {
     this.canvas = canvas;
+
     this.width = this.canvas.width;
     this.height = this.canvas.height;
     this.marginY = 260;
@@ -40,7 +43,9 @@ export default class Game {
     this.maxObstacles = 5;
     this.enemies = { max: 5, last: 0, count: 0, delay: 1 * 1000 };
     this.eggs = { max: 5, last: 0, count: 0, delay: 1 * 1000 };
+    // this.larvas = { max: 5, last: 0, count: 0, delay: 1 * 1000 };
     this.things = [this.player];
+    this.newThings = [];
 
     this.init();
   }
@@ -105,14 +110,44 @@ export default class Game {
           this.enemies.count += 1;
         }
       }
-      this.things
+      // if (this.larvas.count < this.larvas.max) {
+      //   this.larvas.last += deltaTime;
+      //   if (this.larvas.last >= this.larvas.delay) {
+      //     this.thing.addThing(
+      //       Larva,
+      //       this,
+      //       rand(0, this.width),
+      //       rand(0, this.height)
+      //     );
+      //     this.larvas.last = 0;
+      //     this.larvas.count += 1;
+      //   }
+      // }
+
+      // Update old things
+      this.things = this.things
         .sort((a, b) => a.y - b.y)
-        .forEach((thing) => {
-          thing.update();
+        .filter((thing, index) => {
+          const dontDelete = thing.update(this.timer, index);
           thing.draw(ctx);
+          if (dontDelete) {
+            return dontDelete;
+          }
+          thing.remove();
         });
+
+      // add newThings
+      for (let i = 0; i < this.newThings.length; i++) {
+        this.things.push(this.newThings[i]);
+      }
+      this.newThings.length = 0;
+
       this.timer = 0;
     }
     this.timer += deltaTime;
+  }
+
+  addLarva(cordX, cordY) {
+    this.newThings.push(new Larva(this, cordX, cordY));
   }
 }

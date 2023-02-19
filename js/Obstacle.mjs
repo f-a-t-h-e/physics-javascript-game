@@ -41,7 +41,9 @@ export default class Obstacle {
     this.sprite.y = this.y - this.height * 0.5 - 70;
   }
 
-  update() {}
+  update() {
+    return true;
+  }
 
   /**@type {(ctx: CanvasRenderingContext2D)=>void} */
   draw(ctx) {
@@ -81,4 +83,5 @@ export default class Obstacle {
     }
     return false;
   }
+  remove() {}
 }

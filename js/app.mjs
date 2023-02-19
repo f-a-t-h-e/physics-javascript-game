@@ -12,6 +12,9 @@ window.addEventListener("load", function () {
   context.fillStyle = "white";
   context.lineWidth = 3;
   context.strokeStyle = "white";
+  context.font = "40px Helvetica";
+  context.textAlign = "center";
+  console.log("╕🚀 ~ file: app.mjs:27 ~ context.font ", context.font);
   /**@type {Game} */
   const game = new Game({ canvas });
 

@@ -1,5 +1,6 @@
 import Game from "./Game.mjs";
-import { checkCollision, rand } from "./utils.mjs";
+import Larva from "./Larva.mjs";
+import { checkCollision, formatTimer, rand } from "./utils.mjs";
 
 export default class Egg {
   /**@type {HTMLImageElement} */
@@ -10,27 +11,62 @@ export default class Egg {
     this.game = game;
     this.r = 40;
     this.marginYB = this.game.height - this.r - 30;
-    this.marginYT = this.game.marginY + this.r;
+    this.marginYT = this.game.marginY;
     this.marginXR = this.game.width - this.r;
     this.x = rand(this.r, this.game.width - this.r);
-    this.y = rand(this.marginYT, this.marginYB);
+    this.y = rand(this.marginYT + this.r, this.marginYB);
 
     this.sprite = {
       w: 110,
       h: 135,
-      x: this.x - 110 * 0.5,
-      y: this.y - 135 * 0.5,
     };
     this.width = this.sprite.w;
     this.height = this.sprite.h;
+    this.hatchingStatus = {
+      timer: 0,
+      interval: 3 * 1000,
+    };
   }
 
-  init() {
-    this.sprite.x = this.x - this.width * 0.5;
-    this.sprite.y = this.y - this.height * 0.5 - 30;
+  init() {}
+
+  update(deltatime, i = undefined) {
+    this.collied();
+    this.hitMargins();
+    // if (this.y < this.marginYT) {
+    if (this.hatchingStatus.timer > this.hatchingStatus.interval) {
+      return false;
+    } else {
+      this.hatchingStatus.timer += deltatime;
+    }
+    // }
+    return true;
   }
 
-  update() {}
+  /**
+   *
+   */
+  collied() {
+    this.game.things.forEach((thing, i) => {
+      if (thing === this) {
+        // console.log("hit");
+        // } else if (thing instanceof Player) {
+        // thing.update();
+      } else {
+        const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
+          this,
+          thing
+        );
+        if (colission) {
+          const unit_X = dx / distance;
+          const unit_Y = dy / distance;
+          this.x = thing.x + (sumOfRadius + 1) * unit_X;
+          this.y = thing.y + (sumOfRadius + 1) * unit_Y;
+          //
+        }
+      }
+    });
+  }
   updatePos(index, depth, dig = false) {
     let moved = false;
     if (depth > 3) {
@@ -84,6 +120,13 @@ export default class Egg {
     return moved;
   }
 
+  remove() {
+    --this.game.eggs.count;
+    if (this.hatchingStatus.timer > this.hatchingStatus.interval) {
+      this.game.addLarva(this.x, this.y);
+    }
+  }
+
   /**@type {(ctx: CanvasRenderingContext2D)=>void} */
   draw(ctx) {
     if (this.game.skip) {
@@ -94,8 +137,8 @@ export default class Egg {
         0,
         this.sprite.w,
         this.sprite.h,
-        this.sprite.x,
-        this.sprite.y,
+        this.x - 110 * 0.5,
+        this.y - 135 * 0.7,
         this.width,
         this.height
       );
@@ -108,15 +151,22 @@ export default class Egg {
       ctx.fill();
       ctx.restore();
       ctx.stroke();
+      // console.log(this.hatchingStatus.timer);
+      ctx.fillText(
+        formatTimer(this.hatchingStatus.timer),
+        this.x,
+        this.y - this.height * 0.75
+      );
     }
   }
 
   hitMargins() {
     let moved = false;
-    if (this.y < this.marginYT) {
-      this.y = this.marginYT + 1;
-      moved = true;
-    } else if (this.y > this.marginYB) {
+    // if (this.y < this.marginYT) {
+    //   this.y = this.marginYT + 1;
+    //   moved = true;
+    // } else
+    if (this.y > this.marginYB) {
       this.y = this.marginYB - 1;
       moved = true;
     }
@@ -129,4 +179,6 @@ export default class Egg {
     }
     return moved;
   }
+
+  hatch() {}
 }

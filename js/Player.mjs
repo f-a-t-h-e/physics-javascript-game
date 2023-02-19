@@ -1,6 +1,7 @@
 import Egg from "./Egg.mjs";
 import Enemy from "./Enemy.mjs";
 import Game from "./Game.mjs";
+import Larva from "./Larva.mjs";
 import { checkCollision } from "./utils.mjs";
 
 export default class Player {
@@ -44,7 +45,7 @@ export default class Player {
       y: 0,
       max_Y: 0,
     };
-    this.s.modifier = 5;
+    this.s.modifier = 10;
     /**@type {HTMLImageElement} */
     this.image = document.getElementById("bull");
     this.width = this.sprite.w;
@@ -91,7 +92,7 @@ export default class Player {
     }
   }
 
-  update() {
+  update(deltaTime, i = undefined) {
     this.d.x = this.game.mouse.x - this.x;
     this.d.y = this.game.mouse.y - this.y;
     const distance = Math.hypot(this.d.x, this.d.y);
@@ -117,44 +118,45 @@ export default class Player {
     } else {
       this.s.x = 0;
       this.s.y = 0;
+      this.collied();
     }
 
     this.x += this.s.x * this.s.modifier;
     this.y += this.s.y * this.s.modifier;
-    // boundary x
-    if (this.x < this.r) this.x = this.r + 1;
-    else if (this.x > this.game.width - this.r)
-      this.x = this.game.width - this.r - 1;
-    // boundary y
-    if (this.y < this.marginY + this.r) this.y = this.marginY + this.r + 1;
-    else if (this.y > this.game.height - this.r)
-      this.y = this.game.height - this.r - 1;
-    // collision
     this.collied();
+    //margins
+    this.hitMargins();
+    // collision
+    return true;
   }
 
   collied() {
     this.game.things.forEach((thing, i) => {
-      if (thing instanceof Player || thing instanceof Enemy) {
-      } else if (thing instanceof Egg) {
-        const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
-          this,
-          thing
-        );
-        if (colission) {
-          if (thing.updatePos(i, 0)) {
-            const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
-              this,
-              thing
-            );
-            if (colission) {
-              const unit_X = dx / distance;
-              const unit_Y = dy / distance;
-              this.x = thing.x + (sumOfRadius + 2) * unit_X;
-              this.y = thing.y + (sumOfRadius + 2) * unit_Y;
-            }
-          }
-        }
+      if (
+        thing instanceof Player ||
+        thing instanceof Enemy ||
+        thing instanceof Egg ||
+        thing instanceof Larva
+      ) {
+        // } else if (thing instanceof Egg) {
+        //   const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
+        //     this,
+        //     thing
+        //   );
+        //   if (colission) {
+        //     if (thing.updatePos(i, 0)) {
+        //       const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
+        //         this,
+        //         thing
+        //       );
+        //       if (colission) {
+        //         const unit_X = dx / distance;
+        //         const unit_Y = dy / distance;
+        //         this.x = thing.x + (sumOfRadius + 2) * unit_X;
+        //         this.y = thing.y + (sumOfRadius + 2) * unit_Y;
+        //       }
+        //     }
+        //   }
       } else {
         const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
           this,
@@ -165,20 +167,33 @@ export default class Player {
           const unit_Y = dy / distance;
           this.x = thing.x + (sumOfRadius + 1) * unit_X;
           this.y = thing.y + (sumOfRadius + 1) * unit_Y;
+          if (thing instanceof Enemy) {
+            console.log("AAAA");
+          }
         }
       }
     });
   }
 
   hitMargins() {
+    // boundary x
+    let moved = false;
+    if (this.x < this.r) {
+      this.x = this.r + 1;
+      moved = true;
+    } else if (this.x > this.game.width - this.r) {
+      this.x = this.game.width - this.r - 1;
+      moved = true;
+    }
+    // boundary y
     if (this.y < this.marginY + this.r) {
       this.y = this.marginY + this.r + 1;
-      return true;
-    }
-    if (this.y > this.game.height - this.r) {
+      moved = true;
+    } else if (this.y > this.game.height - this.r) {
       this.y = this.game.height - this.r - 1;
-      return true;
+      moved = true;
     }
-    return false;
+    return moved;
   }
+  remove() {}
 }

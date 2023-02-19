@@ -1,5 +1,6 @@
 import Enemy from "./Enemy.mjs";
 import Game from "./Game.mjs";
+import Larva from "./Larva.mjs";
 import { checkCollision } from "./utils.mjs";
 
 export default class Thing {
@@ -33,10 +34,17 @@ export default class Thing {
         }
       }
     }
-
     if (tries < 10) {
+      if (newThing instanceof Larva) {
+        console.log(this.game.things);
+      }
       newThing.init();
       this.game.things.push(newThing);
+      if (newThing instanceof Larva) {
+        console.log(this.game.things);
+      }
+    } else {
+      console.log("after ", tries, " - tries couldn't add this", newThing);
     }
   }
 }
