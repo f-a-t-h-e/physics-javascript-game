@@ -32,8 +32,6 @@ export default class Obstacle {
     this.y = rand(this.marginY + this.r, this.game.height - this.r);
     this.framX = Math.floor(rand(0, 4)) * this.sprite.w;
     this.framY = Math.floor(rand(0, 3)) * this.sprite.h;
-    console.log(this.framX / this.sprite.w);
-    console.log(this.framY / this.sprite.h);
     this.sprite.x = this.x - this.width * 0.5;
     this.sprite.y = this.y - this.height * 0.5 - 70;
   }

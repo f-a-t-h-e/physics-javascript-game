@@ -19,6 +19,7 @@ export default class Game {
   fps = 50;
   timer = 0;
   interval = 16.5;
+  interval = 1000 / this.fps;
 
   skip = false;
 
@@ -37,13 +38,14 @@ export default class Game {
     this.thing = new Thing(this);
     this.debug = true;
     this.maxObstacles = 5;
+    this.enemies = { max: 10, last: 0, count: 0, delay: 5 * 1000 };
     this.eggs = { max: 10, last: 0, count: 0, delay: 1 * 1000 };
     this.things = [this.player];
 
     this.init();
   }
   updateThings() {
-    this.things = [...this.obstacles.arr, this.player, ...this.eggs.arr];
+    // this.things = [...this.obstacles.arr, this.player, ...this.eggs.arr];
   }
   init() {
     for (let i = 0; i < this.maxObstacles; i++) {
@@ -59,6 +61,9 @@ export default class Game {
         this.skip = !this.skip;
       } else if (e.code === "KeyG") {
         console.log(this);
+      } else if (e.code === "KeyE") {
+        const a = this.things.find((thing) => thing instanceof Enemy);
+        console.log(a);
       }
     });
     this.canvas.addEventListener("mousedown", (e) => {
@@ -77,7 +82,6 @@ export default class Game {
         this.mouse.y = e.offsetY;
       }
     });
-    this.thing.addThing(Enemy, this);
   }
 
   /**@type {(ctx: CanvasRenderingContext2D, deltaTime:number)} */
@@ -85,12 +89,6 @@ export default class Game {
     if (this.timer > this.interval) {
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-      this.things
-        .sort((a, b) => a.y - b.y)
-        .forEach((thing) => {
-          thing.update();
-          thing.draw(ctx);
-        });
       if (this.eggs.count < this.eggs.max) {
         this.eggs.last += deltaTime;
         if (this.eggs.last >= this.eggs.delay) {
@@ -99,6 +97,20 @@ export default class Game {
           this.eggs.count += 1;
         }
       }
+      if (this.enemies.count < this.enemies.max) {
+        this.enemies.last += deltaTime;
+        if (this.enemies.last >= this.enemies.delay) {
+          this.thing.addThing(Enemy, this);
+          this.enemies.last = 0;
+          this.enemies.count += 1;
+        }
+      }
+      this.things
+        .sort((a, b) => a.y - b.y)
+        .forEach((thing) => {
+          thing.update();
+          thing.draw(ctx);
+        });
       this.timer = 0;
     }
     this.timer += deltaTime;

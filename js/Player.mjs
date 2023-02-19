@@ -1,4 +1,5 @@
 import Egg from "./Egg.mjs";
+import Enemy from "./Enemy.mjs";
 import Game from "./Game.mjs";
 import { checkCollision } from "./utils.mjs";
 
@@ -129,8 +130,12 @@ export default class Player {
     else if (this.y > this.game.height - this.r)
       this.y = this.game.height - this.r - 1;
     // collision
+    this.collied();
+  }
+
+  collied() {
     this.game.things.forEach((thing, i) => {
-      if (thing instanceof Player) {
+      if (thing instanceof Player || thing instanceof Enemy) {
       } else if (thing instanceof Egg) {
         const [colission, distance, sumOfRadius, dx, dy] = checkCollision(
           this,

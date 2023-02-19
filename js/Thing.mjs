@@ -1,3 +1,4 @@
+import Enemy from "./Enemy.mjs";
 import Game from "./Game.mjs";
 import { checkCollision } from "./utils.mjs";
 
