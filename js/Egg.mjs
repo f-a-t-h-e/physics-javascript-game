@@ -8,7 +8,7 @@ export default class Egg {
   /**@type {(game:Game)=>Egg} */
   constructor(game) {
     this.game = game;
-    this.r = 45;
+    this.r = 40;
     this.marginYB = this.game.height - this.r - 30;
     this.marginYT = this.game.marginY + this.r;
     this.marginXR = this.game.width - this.r;

@@ -10,11 +10,15 @@ export default class Enemy {
   /**@type {(game:Game)=>Player} */
   constructor(game) {
     this.game = game;
-    this.r = 90;
+    this.r = 40;
     this.x = this.game.width + 140;
     this.y = rand(this.game.marginY, this.game.height - this.r);
-    console.log(this.x);
+    this.marginYB = this.game.height - this.r;
+    this.marginYT = this.game.marginY + this.r;
     this.speedX = rand(0.5, 3.5);
+    this.speedY = rand(0.25, 1.75);
+    this.angleY = rand(0, Math.PI);
+    this.angleMod = rand(0, 0.1);
     this.sprite = {
       w: 140,
       h: 260,
@@ -31,13 +35,20 @@ export default class Enemy {
     };
   }
   update() {
+    let last_x = this.x;
     this.x -= this.speedX;
+    // this.y +=
+    //   Math.cos((this.angleY = this.angleY + this.angleMod)) * this.speedY;
     if (this.x < -this.width) {
-      console.log(1111);
       this.x = this.game.width + this.width;
       this.y = rand(this.game.marginY, this.game.height - this.r);
     }
     this.collied();
+    this.hitMargins();
+    /**
+     * TO_DO
+     */
+    // if (displacementX is too small since long time) {}
   }
   collied() {
     this.game.things.forEach((thing, i) => {
@@ -79,7 +90,24 @@ export default class Enemy {
       }
     });
   }
-  hitMargins() {}
+  hitMargins() {
+    let moved = false;
+    if (this.y < this.marginYT) {
+      this.y = this.marginYT + 1;
+      moved = true;
+    } else if (this.y > this.marginYB) {
+      this.y = this.marginYB - 1;
+      moved = true;
+    }
+    // if (this.x < this.r) {
+    //   this.x = this.r + 1;
+    //   moved = true;
+    // } else if (this.x > this.marginXR) {
+    //   this.x = this.marginXR - 1;
+    //   moved = true;
+    // }
+    return moved;
+  }
   /**@type {(ctx: CanvasRenderingContext2D)=>void} */
   draw(ctx) {
     // if (this.game.skip) {
@@ -91,7 +119,7 @@ export default class Enemy {
       this.sprite.w,
       this.sprite.h,
       this.x - this.width * 0.5,
-      this.y - this.height * 0.5,
+      this.y - this.height * 0.85,
       this.width,
       this.height
     );

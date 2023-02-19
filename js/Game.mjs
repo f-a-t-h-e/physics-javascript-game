@@ -38,8 +38,8 @@ export default class Game {
     this.thing = new Thing(this);
     this.debug = true;
     this.maxObstacles = 5;
-    this.enemies = { max: 10, last: 0, count: 0, delay: 5 * 1000 };
-    this.eggs = { max: 10, last: 0, count: 0, delay: 1 * 1000 };
+    this.enemies = { max: 5, last: 0, count: 0, delay: 1 * 1000 };
+    this.eggs = { max: 5, last: 0, count: 0, delay: 1 * 1000 };
     this.things = [this.player];
 
     this.init();
@@ -53,7 +53,7 @@ export default class Game {
     }
 
     window.addEventListener("keypress", (e) => {
-      // console.log(e);
+      console.log(e);
       // lesson - 15
       if (e.code === "KeyD") {
         this.debug = !this.debug;
