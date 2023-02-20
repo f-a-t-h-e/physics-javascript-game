@@ -55,23 +55,26 @@ export default class Thing {
    * @param {number} cordX The position X
    * @param {number} cordY The positino Y
    * @param {number} radius The radius of the entity
+   * @param {number} num The number of particles to be added
    */
-  addParticle(TheParticle, cordX, cordY, radius) {
-    if (this.game.particles.arr.length < this.game.particles.max) {
-      this.game.particles.arr.length += 1;
-      this.game.particles.cursur += 1;
-    } else {
-      this.game.particles.cursur =
-        (this.game.particles.cursur + 1) % this.game.particles.arr.length;
+  addParticle(TheParticle, cordX, cordY, radius, num) {
+    for (let i = 0; i < num; i++) {
+      if (this.game.particles.arr.length < this.game.particles.max) {
+        this.game.particles.arr.length += 1;
+        this.game.particles.cursur += 1;
+      } else {
+        this.game.particles.cursur =
+          (this.game.particles.cursur + 1) % this.game.particles.arr.length;
+      }
+
+      const randX = cordX; /*+ Math.random() * radius * 2 - radius*/
+      const randY = cordY; /*+ Math.random() * radius * 2 - radius*/
+
+      this.game.particles.arr[this.game.particles.cursur] = new TheParticle(
+        this.game,
+        randX,
+        randY
+      );
     }
-
-    const randX = cordX + Math.random() * radius * 2 - radius;
-    const randY = cordY + Math.random() * radius * 2 - radius;
-
-    this.game.particles.arr[this.game.particles.cursur] = new TheParticle(
-      this.game,
-      randX,
-      randY
-    );
   }
 }

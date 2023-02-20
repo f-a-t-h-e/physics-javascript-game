@@ -1,4 +1,4 @@
-import { FireFog } from "./effects/Particle.mjs";
+import { FireFly } from "./effects/Particle.mjs";
 import Egg from "./Egg.mjs";
 import Enemy from "./Enemy.mjs";
 import Game from "./Game.mjs";
@@ -17,7 +17,7 @@ export default class Larva {
     this.y = cordY;
     this.r = 30;
     this.marginYB = this.game.height - this.r;
-    this.marginYT = this.game.marginY + this.r;
+    this.marginYT = this.game.marginY;
     this.sprite = {
       w: 150,
       h: 150,
@@ -28,10 +28,11 @@ export default class Larva {
     this.height = this.sprite.h;
     this.hit = {
       timer: 0,
-      interval: 1 * 500,
+      interval: 1 * 100,
       count: 0,
       max: 2,
     };
+    this.score = 3;
   }
   init() {}
 
@@ -54,6 +55,7 @@ export default class Larva {
       return false;
     }
     if (this.y < this.marginYT) {
+      this.game.thing.addParticle(FireFly, this.x, this.y, this.r, this.score);
       return false;
     }
 
@@ -91,10 +93,9 @@ export default class Larva {
     let hits = 0;
     this.game.things.forEach((thing, i) => {
       if (thing instanceof Enemy) {
-        const collision = checkCollision(this, thing)[0];
-        if (collision) {
+        const [distance, sumOfRadius] = checkCollision(this, thing).slice(1, 3);
+        if (distance - sumOfRadius < 10) {
           hits += 1;
-          this.game.thing.addParticle(FireFog, this.x, this.y, this.r);
         }
       } else if (
         thing === this ||
