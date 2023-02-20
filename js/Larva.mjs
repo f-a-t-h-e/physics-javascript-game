@@ -1,3 +1,4 @@
+import { FireFog } from "./effects/Particle.mjs";
 import Egg from "./Egg.mjs";
 import Enemy from "./Enemy.mjs";
 import Game from "./Game.mjs";
@@ -93,6 +94,7 @@ export default class Larva {
         const collision = checkCollision(this, thing)[0];
         if (collision) {
           hits += 1;
+          this.game.thing.addParticle(FireFog, this.x, this.y, this.r);
         }
       } else if (
         thing === this ||

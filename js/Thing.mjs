@@ -1,7 +1,8 @@
+import Particle from "./effects/Particle.mjs";
 import Enemy from "./Enemy.mjs";
 import Game from "./Game.mjs";
 import Larva from "./Larva.mjs";
-import { checkCollision } from "./utils.mjs";
+import { checkCollision, rand } from "./utils.mjs";
 
 export default class Thing {
   /**@type {Game} */
@@ -46,5 +47,31 @@ export default class Thing {
     } else {
       console.log("after ", tries, " - tries couldn't add this", newThing);
     }
+  }
+
+  /**
+   * This method is to add new particles properly
+   * @param {Particle} TheParticle The particle to be added
+   * @param {number} cordX The position X
+   * @param {number} cordY The positino Y
+   * @param {number} radius The radius of the entity
+   */
+  addParticle(TheParticle, cordX, cordY, radius) {
+    if (this.game.particles.arr.length < this.game.particles.max) {
+      this.game.particles.arr.length += 1;
+      this.game.particles.cursur += 1;
+    } else {
+      this.game.particles.cursur =
+        (this.game.particles.cursur + 1) % this.game.particles.arr.length;
+    }
+
+    const randX = cordX + Math.random() * radius * 2 - radius;
+    const randY = cordY + Math.random() * radius * 2 - radius;
+
+    this.game.particles.arr[this.game.particles.cursur] = new TheParticle(
+      this.game,
+      randX,
+      randY
+    );
   }
 }
