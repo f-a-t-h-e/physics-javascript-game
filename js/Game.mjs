@@ -1,3 +1,4 @@
+import Particle from "./effects/Particle.mjs";
 import Egg from "./Egg.mjs";
 import Enemy from "./Enemy.mjs";
 import Larva from "./Larva.mjs";
@@ -25,6 +26,11 @@ export default class Game {
 
   skip = false;
 
+  /**
+   * @type {{cursur: number;arr: Particle[];max:number}}
+   */
+  particles;
+
   /**@type {(canvas:HTMLCanvasElement)=>Game} */
   constructor({ canvas }) {
     this.canvas = canvas;
@@ -46,6 +52,11 @@ export default class Game {
     // this.larvas = { max: 5, last: 0, count: 0, delay: 1 * 1000 };
     this.things = [this.player];
     this.newThings = [];
+    this.particles = {
+      cursur: -1,
+      arr: [],
+      max: 10,
+    };
 
     this.init();
   }
@@ -141,6 +152,12 @@ export default class Game {
         this.things.push(this.newThings[i]);
       }
       this.newThings.length = 0;
+
+      // render particles
+      this.particles.arr.forEach((particle) => {
+        particle.update();
+        particle.draw(ctx);
+      });
 
       this.timer = 0;
     }
