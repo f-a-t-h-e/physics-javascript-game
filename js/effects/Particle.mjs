@@ -10,11 +10,12 @@ export default class Particle {
     this.color = color;
     this.r = Math.floor(rand(5, 15));
     this.timer = 0;
+    this.interval = 3 * 1000;
   }
   update(deltaTime, i = undefined) {
     this.y -= 0.5;
     this.timer += deltaTime;
-    if (this.timer > 10000) {
+    if (this.timer > this.interval) {
       return false;
     }
     return true;
