@@ -6,7 +6,7 @@ import { checkCollision, rand } from "./utils.mjs";
 
 export default class Enemy {
   /**@type {HTMLImageElement} */
-  image = document.getElementById("toad");
+  image = document.getElementById("toads");
 
   /**@type {(game:Game)=>Player} */
   constructor(game) {
@@ -23,18 +23,17 @@ export default class Enemy {
     this.sprite = {
       w: 140,
       h: 260,
+      // x: 0,
+      // y: 0,
+      frameX: 0,
+      frameY: Math.floor(Math.random() * 4),
     };
     this.width = this.sprite.w;
     this.height = this.sprite.h;
     // this.s = {
     // }
   }
-  init() {
-    this.sprite = {
-      w: 140,
-      h: 260,
-    };
-  }
+  init() {}
   update(deltaTime, i = undefined) {
     if (this.collied()) {
     } else {
@@ -124,6 +123,7 @@ export default class Enemy {
     if (this.x < -this.width) {
       this.x = this.game.width + this.width;
       this.y = rand(this.game.marginY, this.game.height - this.r);
+      this.sprite.frameY = Math.floor(Math.random() * 4);
     }
     // if (this.x < this.r) {
     //   this.x = this.r + 1;
@@ -140,8 +140,8 @@ export default class Enemy {
     } else {
       ctx.drawImage(
         this.image,
-        0,
-        0,
+        this.sprite.frameX,
+        this.sprite.frameY * this.sprite.h,
         this.sprite.w,
         this.sprite.h,
         this.x - this.width * 0.5,
