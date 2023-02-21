@@ -55,7 +55,7 @@ export default class Game {
     this.particles = {
       cursur: -1,
       arr: [],
-      max: 10,
+      max: 900,
     };
 
     this.init();
@@ -154,9 +154,10 @@ export default class Game {
       this.newThings.length = 0;
 
       // render particles
-      this.particles.arr.forEach((particle) => {
-        particle.update();
+      this.particles.arr = this.particles.arr.filter((particle) => {
+        const dontDelete = particle.update();
         particle.draw(ctx);
+        return dontDelete;
       });
 
       this.timer = 0;

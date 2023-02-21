@@ -1,4 +1,4 @@
-import { FireFly } from "./effects/Particle.mjs";
+import { FireFly, Spark } from "./effects/Particle.mjs";
 import Egg from "./Egg.mjs";
 import Enemy from "./Enemy.mjs";
 import Game from "./Game.mjs";
@@ -32,7 +32,7 @@ export default class Larva {
       count: 0,
       max: 2,
     };
-    this.score = 3;
+    this.score = 30;
   }
   init() {}
 
@@ -52,6 +52,14 @@ export default class Larva {
 
     if (this.hit.count > this.hit.max) {
       this.game.score -= 1;
+      this.game.thing.addParticle(
+        Spark,
+        this.x,
+        this.y,
+        this.r,
+        this.score / 10
+      );
+
       return false;
     }
     if (this.y < this.marginYT) {

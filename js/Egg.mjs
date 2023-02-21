@@ -48,7 +48,7 @@ export default class Egg {
    */
   collied() {
     this.game.things.forEach((thing, i) => {
-      if (thing === this) {
+      if (thing === this || thing instanceof Larva) {
         // console.log("hit");
         // } else if (thing instanceof Player) {
         // thing.update();

@@ -45,9 +45,9 @@ export default class Particle {
 }
 
 export class FireFly extends Particle {
-  /**@type {(game:Game,cordX:number,cordY:number)=>Particle} */
-  constructor(game, cordX, cordY) {
-    super(game, cordX, cordY, "red");
+  /**@type {(game:Game,cordX:number,cordY:number,color:string)=>Particle} */
+  constructor(game, cordX, cordY, color = "yellow") {
+    super(game, cordX, cordY, color);
   }
   update() {
     this.angle.current += this.angle.speed;
@@ -64,14 +64,21 @@ export class FireFly extends Particle {
   }
 }
 
-class Spark extends Particle {
+export class Spark extends Particle {
+  /**@type {(game:Game,cordX:number,cordY:number,color:string)=>Particle} */
+  constructor(game, cordX, cordY, color = "blue") {
+    super(game, cordX, cordY, color);
+  }
   update() {
-    // this.angle.current += this.angle.speed;
-    // this.x += this.s.x;
-    // this.y -= this.s.y;
-    // if (this.y < 0 - this.r) {
-    //   return false;
-    // }
+    this.angle.current += this.angle.speed * 0.5;
+    this.x -= Math.cos(this.angle.current) * this.s.x;
+    this.y -= Math.sin(this.angle.current) * this.s.y;
+    if (this.r > 0.1) {
+      this.r -= 0.05;
+    } else {
+      return false;
+    }
+
     return true;
   }
 }
