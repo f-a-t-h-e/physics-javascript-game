@@ -23,6 +23,9 @@ window.addEventListener("load", function () {
     const deltaTime = timestamp - lastTime;
     lastTime = timestamp;
     game.render(context, deltaTime);
-    window.requestAnimationFrame(animate);
+    if (game.gameOver) {
+    } else {
+      window.requestAnimationFrame(animate);
+    }
   }
 });

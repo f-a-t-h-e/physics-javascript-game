@@ -1,6 +1,6 @@
 import Particle from "./effects/Particle.mjs";
 import Egg from "./Egg.mjs";
-import Enemy from "./Enemy.mjs";
+import Enemy, { Barkskin } from "./Enemy.mjs";
 import Larva from "./Larva.mjs";
 import Obstacle from "./Obstacle.mjs";
 import Player from "./Player.mjs";
@@ -58,6 +58,13 @@ export default class Game {
       max: 900,
     };
 
+    //
+    this.score = {
+      loset: 0,
+      won: 0,
+      winning: 5,
+    };
+    this.gameOver = false;
     this.init();
   }
   updateThings() {
@@ -116,7 +123,7 @@ export default class Game {
       if (this.enemies.count < this.enemies.max) {
         this.enemies.last += deltaTime;
         if (this.enemies.last >= this.enemies.delay) {
-          this.thing.addThing(Enemy, this);
+          this.thing.addThing(Math.random() < 0.5 ? Enemy : Barkskin, this);
           this.enemies.last = 0;
           this.enemies.count += 1;
         }
@@ -159,6 +166,38 @@ export default class Game {
         particle.draw(ctx);
         return dontDelete;
       });
+
+      // Win/Lose message
+      if (this.score.won >= this.score.winning) {
+        this.gameOver = true;
+        ctx.save();
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(0, 0, this.width, this.height);
+        ctx.textAlign = "center";
+        ctx.fillStyle = "white";
+        let message1;
+        let message2;
+        if (this.score.loset <= 5) {
+          message1 = "Bullseye!!!";
+          message2 = "You bullied the bullies!";
+        } else {
+          message1 = "Bullocks!";
+          message2 = `You lost ${this.score.loset} hatchlings, don't be a pushover!`;
+        }
+        ctx.font = "130px Helvetica";
+        ctx.fillText(message1, this.width * 0.5, this.height * 0.5 - 20);
+        ctx.font = "40px Helvetica";
+        ctx.fillText(message2, this.width * 0.5, this.height * 0.5 + 30);
+        ctx.fillText(
+          `Final score ${
+            this.score.won - this.score.loset
+          }. Press 'R' to butt heads again!`,
+          this.width * 0.5,
+          this.height * 0.5 + 80
+        );
+
+        ctx.restore();
+      }
 
       this.timer = 0;
     }

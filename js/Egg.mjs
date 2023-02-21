@@ -24,7 +24,7 @@ export default class Egg {
     this.height = this.sprite.h;
     this.hatchingStatus = {
       timer: 0,
-      interval: 30 * 1000,
+      interval: 3 * 1000,
     };
   }
 

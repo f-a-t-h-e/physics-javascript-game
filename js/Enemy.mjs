@@ -25,6 +25,7 @@ export default class Enemy {
       h: 260,
       // x: 0,
       // y: 0,
+      maxX: 38,
       frameX: 0,
       frameY: Math.floor(Math.random() * 4),
     };
@@ -161,4 +162,22 @@ export default class Enemy {
     }
   }
   remove() {}
+}
+
+export class Barkskin extends Enemy {
+  init() {
+    super.init();
+    this.image = document.getElementById("barkskin");
+    this.sprite = {
+      ...this.sprite,
+      w: 183,
+      h: 280,
+      // x: 0,
+      // y: 0,
+      // frameX: 0,
+      // frameY: Math.floor(Math.random() * 4),
+    };
+    this.width = this.sprite.w;
+    this.height = this.sprite.h;
+  }
 }

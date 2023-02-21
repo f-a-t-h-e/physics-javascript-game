@@ -22,6 +22,7 @@ export default class Larva {
       w: 150,
       h: 150,
       x: 0,
+      maxX: 38,
       y: rand(0, 1) > 0.5 ? 1 : 0,
     };
     this.width = this.sprite.w;
@@ -51,7 +52,7 @@ export default class Larva {
     this.y -= 1;
 
     if (this.hit.count > this.hit.max) {
-      this.game.score -= 1;
+      this.game.score.loset += 1;
       this.game.thing.addParticle(
         Spark,
         this.x,
@@ -63,6 +64,7 @@ export default class Larva {
       return false;
     }
     if (this.y < this.marginYT) {
+      this.game.score.won += 1;
       this.game.thing.addParticle(FireFly, this.x, this.y, this.r, this.score);
       return false;
     }
