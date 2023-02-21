@@ -24,7 +24,7 @@ export default class Egg {
     this.height = this.sprite.h;
     this.hatchingStatus = {
       timer: 0,
-      interval: 3 * 1000,
+      interval: 30 * 1000,
     };
   }
 
@@ -34,7 +34,10 @@ export default class Egg {
     this.collied();
     this.hitMargins();
     // if (this.y < this.marginYT) {
-    if (this.hatchingStatus.timer > this.hatchingStatus.interval) {
+    if (
+      this.hatchingStatus.timer > this.hatchingStatus.interval ||
+      this.y < this.marginYT
+    ) {
       return false;
     } else {
       this.hatchingStatus.timer += deltatime;
@@ -122,7 +125,10 @@ export default class Egg {
 
   remove() {
     --this.game.eggs.count;
-    if (this.hatchingStatus.timer > this.hatchingStatus.interval) {
+    if (
+      this.hatchingStatus.timer > this.hatchingStatus.interval ||
+      this.y < this.marginYT
+    ) {
       this.game.addLarva(this.x, this.y);
     }
   }
