@@ -45,11 +45,11 @@ export default class Game {
       pressed: false,
     };
     this.thing = new Thing(this);
-    this.debug = true;
+    this.debug = false;
     this.maxObstacles = 5;
     this.enemies = { max: 5, last: 0, count: 0, delay: 1 * 1000 };
     this.eggs = { max: 5, last: 0, count: 0, delay: 1 * 1000 };
-    // this.larvas = { max: 5, last: 0, count: 0, delay: 1 * 1000 };
+    this.larvas = [];
     this.things = [this.player];
     this.newThings = [];
     this.particles = {
